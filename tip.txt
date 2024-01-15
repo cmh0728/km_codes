@@ -1,0 +1,5 @@
+1. roslaunch rosbridge_server rosbridge_websocket.launch
+>>velosity data 300정도가 1이  나옴. 
+
+3일차 영상에 많은 센서들에 의한 토픽 데이터들을 확인하는 것들 나옴. 신호등 데이터,
+장애물 데이터 등등. 
