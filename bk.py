@@ -1,22 +1,32 @@
-class Fibonacci:
+import sys
+import math 
+input = sys.stdin.readline
+
+# 두 값의 차이가 양수이거나 음수인것의 개수를 세면 되지 않을까..
+
+class beakjoon():
     def __init__(self):
-        pass
-    
-    def fb(self, n):
-        a, b = 0, 1
-        for _ in range(n):
-            a, b = b, a + b
-        return a
+        self.num = 0
+        self.count = 0
+        
+    def func1(self,n,arr):
+        dp = [1 for _ in range(n)]
+
+        for i in range(n):
+            for j in range(i):
+                if arr[i][1] > arr[j][1]:
+                    dp[i] = max(dp[i],dp[j]+1)
+        return max(dp) ,dp
 
 def main():
-    try:
-        n = int(input("피보나치 수열의 길이를 입력하세요: "))
-        fibonacci = Fibonacci()
-        result = fibonacci.fb(n)
-        print("결과:", result)
-        
-    except Exception as e:
-        print("오류가 발생했습니다:", e)
+
+    n = int(input()) # 두 전봇대 사이의 전깃술의 개수
+    class_name = beakjoon()
+    arr = sorted([list(map(int,input().split())) for _ in range(n)])
+    rst ,dp = class_name.func1(n,arr)
+    # print(dp)
+    # print(arr)
+    print(n-rst)
 
 if __name__ == "__main__":
     main()

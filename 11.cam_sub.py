@@ -5,6 +5,7 @@ import rospy
 from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge
 import cv2
+import numpy as np
 
 class cam_sub: #1. class 이름 설정
     def __init__(self) : #2. init 단 설정
@@ -17,9 +18,11 @@ class cam_sub: #1. class 이름 설정
         self.image_msg = msg
         cv_img = self.bridge.compressed_imgmsg_to_cv2(self.image_msg) #cv형태로 이미지 형식 변환
         cv2.imshow("cv_img",cv_img)
+        print(cv_img.shape)
         cv2.waitKey(1)
 
-def main(): # main()함수 작성
+def main(): 
+    # main()함수 작성
     try : 
         class_sub = cam_sub()
         rospy.spin()

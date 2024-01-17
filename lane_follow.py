@@ -3,6 +3,7 @@
 
 import rospy
 from sensor_msgs.msg import CompressedImage
+from std_msgs.msg import Float64 #velocitiy and steer
 from cv_bridge import CvBridge
 import numpy as np  
 import cv2 
@@ -21,6 +22,12 @@ class cam_sub: #1. class 이름 설정
         rospy.Subscriber("/image_jpeg/compressed",CompressedImage,callback=self.Camera_CB)
         self.image_msg = CompressedImage()
         self.bridge = CvBridge()
+
+        #publisher(vel)
+        self.pub = rospy.Publisher("/commands/motor/speed",Float64,queue_size=1) #topic명 제대로 입력해야 함.
+        self.cmd_msg = Float64()
+        self.rate = rospy.Rate(1)
+        self.speed = 0
 
         # houghLine_pub = rospy.Publisher('HoughLine', Int32MultiArray, queue_size=5)
         # self.pts = []
@@ -220,9 +227,18 @@ class cam_sub: #1. class 이름 설정
         
         
         cv2.waitKey(1)
+    
+    def motor_speed(self):
+        self.speed = 2400 #기본속도 8km/h
+        self.cmd_msg.data = self.speed
+        self.pub.publish(self.cmd_msg)
+        print(f"speed : {self.cmd_msg.data}")
+        self.rate.sleep()
 
 def main(): # main()함수 작성
     try : 
+        class_pub = cam_sub()
+        class_pub.motor_speed()
         class_sub = cam_sub()
         rospy.spin()
     except rospy.ROSInterruptException:
