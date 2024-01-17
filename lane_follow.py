@@ -18,16 +18,18 @@ import matplotlib.pyplot as plt
 
 class cam_sub: #1. class 이름 설정
     def __init__(self) : #2. init 단 설정
-        rospy.init_node("lane_detecton_node") #1.node의 이름 설정. 
-        rospy.Subscriber("/image_jpeg/compressed",CompressedImage,callback=self.Camera_CB)
-        self.image_msg = CompressedImage()
-        self.bridge = CvBridge()
+        rospy.init_node("lane_follow_node") #1.node의 이름 설정. 
 
         #publisher(vel)
         self.pub = rospy.Publisher("/commands/motor/speed",Float64,queue_size=1) #topic명 제대로 입력해야 함.
         self.cmd_msg = Float64()
-        self.rate = rospy.Rate(1)
+        self.rate = rospy.Rate(10)
         self.speed = 0
+
+        rospy.Subscriber("/image_jpeg/compressed",CompressedImage,callback=self.Camera_CB)
+        self.image_msg = CompressedImage()
+        self.bridge = CvBridge()
+
 
         # houghLine_pub = rospy.Publisher('HoughLine', Int32MultiArray, queue_size=5)
         # self.pts = []
@@ -228,18 +230,20 @@ class cam_sub: #1. class 이름 설정
         
         cv2.waitKey(1)
     
-    def motor_speed(self):
-        self.speed = 2400 #기본속도 8km/h
-        self.cmd_msg.data = self.speed
+    def motor(self):
+        speed = 6
+        if speed > 8:
+            speed = 8 # 제한 범위 설정
+        self.cmd_msg.data = speed * 300 #max == 2400
         self.pub.publish(self.cmd_msg)
         print(f"speed : {self.cmd_msg.data}")
         self.rate.sleep()
 
 def main(): # main()함수 작성
     try : 
-        class_pub = cam_sub()
-        class_pub.motor_speed()
-        class_sub = cam_sub()
+        class_pub_sub= cam_sub()
+        while not rospy.is_shutdown():
+            class_pub_sub.motor()
         rospy.spin()
     except rospy.ROSInterruptException:
         pass

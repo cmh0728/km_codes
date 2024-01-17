@@ -9,14 +9,13 @@ class sim_pub: #1. class 이름 설정
         rospy.init_node("sim_cmd_node") #1.node의 이름 설정.
         self.pub = rospy.Publisher("/commands/motor/speed",Float64,queue_size=1) #topic명 제대로 입력해야 함.
         self.cmd_msg = Float64()
-        self.rate = rospy.Rate(1)
-        self.speed = 0
+        self.rate = rospy.Rate(10)
 
     def motor(self):
-        self.speed += 50 
-        if speed > 2400:
-            speed = 2400 # 제한 범위 설정
-        self.cmd_msg.data = speed #max == 2400
+        speed = 6
+        if speed > 8:
+            speed = 8 # 제한 범위 설정
+        self.cmd_msg.data = speed * 300 #max == 2400
         self.pub.publish(self.cmd_msg)
         print(f"speed : {self.cmd_msg.data}")
         self.rate.sleep()
@@ -25,7 +24,8 @@ class sim_pub: #1. class 이름 설정
 def main(): # main()함수 작성
     try : 
         class_pub = sim_pub()
-        class_pub.motor()
+        while not rospy.is_shutdown():
+            class_pub.motor()
     except rospy.ROSInterruptException:
         pass
 
