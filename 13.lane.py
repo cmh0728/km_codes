@@ -3,6 +3,7 @@
 
 import rospy
 from sensor_msgs.msg import CompressedImage
+from std_msgs.msg import Float64 #velocitiy and steer
 from cv_bridge import CvBridge
 import numpy as np  
 import cv2 

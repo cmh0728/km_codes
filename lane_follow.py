@@ -22,9 +22,12 @@ class cam_sub: #1. class 이름 설정
 
         #publisher(vel)
         self.pub = rospy.Publisher("/commands/motor/speed",Float64,queue_size=1) #topic명 제대로 입력해야 함.
+        self.pub = rospy.Publisher("/commands/servo/position",Float64,queue_size=1) #topic명 제대로 입력해야 함.
+
         self.cmd_msg = Float64()
         self.rate = rospy.Rate(10)
         self.speed = 0
+        self.steer = 0 #value : 0~1 --> degree : -19.5~19.5
 
         rospy.Subscriber("/image_jpeg/compressed",CompressedImage,callback=self.Camera_CB)
         self.image_msg = CompressedImage()
@@ -230,20 +233,25 @@ class cam_sub: #1. class 이름 설정
         
         cv2.waitKey(1)
     
-    def motor(self):
-        speed = 6
+    def motor_speed(self):
+        speed = 1
         if speed > 8:
             speed = 8 # 제한 범위 설정
         self.cmd_msg.data = speed * 300 #max == 2400
         self.pub.publish(self.cmd_msg)
         print(f"speed : {self.cmd_msg.data}")
         self.rate.sleep()
+    
+    def motor_steer(self):
+        pass
+
+
 
 def main(): # main()함수 작성
     try : 
         class_pub_sub= cam_sub()
         while not rospy.is_shutdown():
-            class_pub_sub.motor()
+            class_pub_sub.motor_speed()
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
@@ -251,3 +259,9 @@ def main(): # main()함수 작성
 if __name__== "__main__": # main함수의 선언, 시작을 의미
     main()
     
+#next step : steer + vel + cb
+#next step 2: pid
+    
+#1. left인지, right인지 판별, 차선이 하나만 뜨는 과정에서 추종, 
+#2. 정지선 hough line
+#3. 신호등 topic 받기
