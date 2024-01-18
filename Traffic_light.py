@@ -17,15 +17,21 @@ class Traffic_light_sub:
         if self.prev_light_status is not None and self.prev_light_status != current_light_status:  
             if current_light_status == 1:
                 print("빨간불입니다.정지")
+                self.steer_pub.steer = 0.5
+                self.speed_pub.speed = 0
             elif current_light_status == 16:
                 print("파란불입니다.")
+                self.steer_pub.steer = 0.5 
+                self.speed_pub.speed = 0  
             elif current_light_status == 4:
                 print("노란불입니다.")
+                self.steer_pub.steer = 0.5  
+                self.speed_pub.speed = 0  
             elif current_light_status == 33:
                 print("좌회전신호입니다.")
-                self.steer_pub.steer = 0.25
+                self.steer_pub.steer = 0.345
                 self.speed_pub.speed = 4
-        self.prev_light_status = current_light_status
+        self.prev_light_status = current_light_status 
 
 class steer_pub: 
     def __init__(self) :
@@ -39,9 +45,10 @@ class steer_pub:
         self.pub.publish(self.cmd_msg)
         print(f"steer:{self.cmd_msg.data}")
         self.rate.sleep()
+
 class speed_pub: 
     def __init__(self) :
-        self.pub = rospy.Publisher("/commands/motor_speed/speed",Float64,queue_size=1) 
+        self.pub = rospy.Publisher("/commands/motor/speed",Float64,queue_size=1) 
         self.cmd_msg = Float64()
         self.rate = rospy.Rate(1)
         self.speed = 0
@@ -56,11 +63,9 @@ def main():
     rospy.init_node("TrafficLight_node")
     try : 
         class_TrafficLight = Traffic_light_sub()
-        class_speed = speed_pub()
-        class_steer = steer_pub()
         while not rospy.is_shutdown():
-            class_speed.motor_speed()
-            class_steer.steering()  
+            class_TrafficLight.steer_pub.steering()
+            class_TrafficLight.speed_pub.motor_speed()  
         rospy.spin()
 
     except rospy.ROSInterruptException:
