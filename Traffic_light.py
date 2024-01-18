@@ -18,13 +18,25 @@ class Traffic_light_sub: #1. class 이름 설정
     def __init__(self) : #2. init 단 설정
         rospy.init_node("TrafficLight_node") #1.node의 이름 설정. 
         rospy.Subscriber("/GetTrafficLightStatus",GetTrafficLightStatus,callback=self.Traffic_light_CB)
+        self.prev_light_status = None # 이전 신호 상태를 저장할 변수 추가
 
+    # def Traffic_light_CB(self,msg):
+    #     print(msg)
 
     def Traffic_light_CB(self,msg):
-        if "trafficLightStatus" == 1: #이거 되냐?
-            
-            print(msg)
-        pass
+        current_light_status = msg.trafficLightStatus # 현재신호상태
+        if self.prev_light_status is not None and self.prev_light_status != current_light_status:
+            if current_light_status == 1:
+                print("빨간불입니다.")
+            elif current_light_status == 16:
+                print("파란불입니다.")
+            elif current_light_status == 4:
+                print("노란불입니다.")
+            elif current_light_status == 33:
+                print("직진은 안되고 좌회전만 가능합니다.")
+        self.prev_light_status = current_light_status # 현재 상태를 이전 상태로 저장
+
+        
 
 
 def main(): # main()함수 작성
